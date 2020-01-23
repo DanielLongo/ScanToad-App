@@ -45,8 +45,9 @@ class Student(db.Model):
 class Class(db.Model):
     __tablename__ = "classes"
     id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(36), nullable=False)
     name = db.Column(db.String(256), nullable=False)
-    teacher_id = db.Column(db.Integer, db.ForeignKey("teachers.id"), nullable=False)
+    teacher_id = db.Column(db.Integer, db.ForeignKey("teachers.id"), nullable=True)
     students = db.relationship("Student", backref="class", lazy=True)
     tests = db.relationship("Test", backref="class", lazy=True)
 
