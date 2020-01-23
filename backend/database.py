@@ -5,8 +5,9 @@ db = SQLAlchemy()
 
 
 # Create a Flask application
-def create_app(name, database_uri, reset=False):
+def create_app(name, secret_key, database_uri, reset=False):
     app = Flask(name)
+    app.secret_key = secret_key
 
     # Configure database
     app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
