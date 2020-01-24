@@ -10,7 +10,7 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if "uid" not in session or "type" not in session:
             return error("no session present", 401)
-        return f(args, kwargs)
+        return f(*args, **kwargs)
     return decorated_function
 
 
