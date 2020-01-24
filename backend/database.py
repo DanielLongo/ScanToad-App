@@ -30,6 +30,13 @@ class Teacher(db.Model):
     password = db.Column(db.String(98), nullable=False)
     classes = db.relationship("Class", backref="teacher", lazy=True)
 
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email
+        }
+
 
 # Store student information
 class Student(db.Model):
@@ -40,6 +47,13 @@ class Student(db.Model):
     password = db.Column(db.String(98), nullable=False)
     class_id = db.Column(db.Integer, db.ForeignKey("classes.id"), nullable=False)
     grades = db.relationship("Grade", backref="student", lazy=True)
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email
+        }
 
 
 # Store class information
@@ -52,6 +66,14 @@ class Class(db.Model):
     students = db.relationship("Student", backref="class", lazy=True)
     tests = db.relationship("Test", backref="class", lazy=True)
 
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "key": self.key,
+            "teacher": self.teacher_id,
+        }
+
 
 # Store test information
 class Test(db.Model):
@@ -61,6 +83,13 @@ class Test(db.Model):
     class_id = db.Column(db.Integer, db.ForeignKey("classes.id"), nullable=False)
     questions = db.relationship("Question", backref="test", lazy=True)
     grades = db.relationship("Grade", backref="test", lazy=True)
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "class": self.class_id
+        }
 
 
 # Store question information
@@ -79,3 +108,12 @@ class Grade(db.Model):
     student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
     total = db.Column(db.Integer, nullable=False)
     correct = db.Column(db.Integer, nullable=False)
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "test": self.test_id,
+            "student": self.student_id,
+            "total": self.total,
+            "correct": self.correct
+        }
