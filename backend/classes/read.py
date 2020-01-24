@@ -13,19 +13,6 @@ def read(class_id):
     if c is None:
         return responses.error("specified class does not exist", 404)
 
-    # Retrieve user from database
-    if session["type"] == "teacher":
-        user = Teacher.query.filter_by(id=session["uid"]).first()
-    elif session["type"] == "student":
-        user = Student.query.filter_by(id=session["uid"]).first()
-    else:
-        return responses.error("invalid account type", 500)
-
-    # Ensure user still exists
-    if user is None:
-        session.clear()
-        return responses.error("logged in user no longer exists", 403)
-
     # Ensure user part of/owns class
     if session["type"] == "teacher" and c.teacher_id != session["uid"]:
         return responses.error("user does not own class", 403)
