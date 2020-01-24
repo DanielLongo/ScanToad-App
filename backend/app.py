@@ -4,6 +4,7 @@ from os import getenv, urandom
 from authentication import authentication
 from classes import classes
 from database import db, create_app
+from tests import tests
 from util import responses
 
 # Initialize app and database
@@ -14,6 +15,7 @@ db.create_all(app=app)
 
 app.register_blueprint(authentication, url_prefix="/auth")
 app.register_blueprint(classes, url_prefix="/classes")
+app.register_blueprint(tests, url_prefix="/classes/<int:class_id>/tests")
 
 
 @app.errorhandler(404)

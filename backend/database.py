@@ -98,6 +98,8 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     test_id = db.Column(db.Integer, db.ForeignKey("tests.id"), nullable=False)
     question = db.Column(db.Text, nullable=False)
+    type = db.Column(db.Integer, nullable=False)
+    data = db.Column(db.PickleType, nullable=False)
 
 
 # Store grade information
