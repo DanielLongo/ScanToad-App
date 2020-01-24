@@ -5,3 +5,4 @@ from .blueprint import classes
 from .create import create
 from .list_method import list_method
 from .read import read
+from .update import update
