@@ -1,15 +1,12 @@
 from flask import session
 
 from .blueprint import authentication
-from util import responses
+from util import responses, login_required
 
 
 @authentication.route("/logout", methods=["GET"])
+@login_required
 def logout():
-    # Ensure user logged in
-    if "uid" not in session or "type" not in session:
-        return responses.error("user not logged in", 401)
-
     # Wipe session
     session.clear()
 
