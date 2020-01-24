@@ -2,6 +2,7 @@ from flask.cli import load_dotenv
 from os import getenv, urandom
 
 from authentication import authentication
+from classes import classes
 from database import db, create_app
 from util import responses
 
@@ -12,6 +13,7 @@ app = create_app(__name__, urandom(64) if getenv("SECRET_KEY") == "" else getenv
 db.create_all(app=app)
 
 app.register_blueprint(authentication, url_prefix="/auth")
+app.register_blueprint(classes, url_prefix="/classes")
 
 
 @app.errorhandler(404)
