@@ -1,7 +1,7 @@
 from flask import session
 
 from .blueprint import classes
-from database import Class, Student, Teacher
+from database import Class, Student
 from util import responses, login_required
 
 
