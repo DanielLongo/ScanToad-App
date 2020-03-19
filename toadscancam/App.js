@@ -3,8 +3,15 @@ import {View, StyleSheet, Text, Image} from 'react-native'
 import * as tf from '@tensorflow/tfjs'
 import {Camera} from 'expo-camera';
 import * as Permissions from 'expo-permissions';
-import {cameraWithTensors, detectGLCapabilities} from '@tensorflow/tfjs-react-native';
+import {cameraWithTensors, decodeJpeg, detectGLCapabilities, fetch} from '@tensorflow/tfjs-react-native';
 import './assets/box.png';
+import './assets/shapes.jpeg';
+// import ImgToBase64 from 'react-native-image-base64';
+import {getBase64String} from 'react-native-image-base64'
+// import {decode as atob, encode as btoa} from 'base-64'
+
+var baseStringSample;
+
 
 const TensorCamera = cameraWithTensors(Camera);
 
@@ -12,6 +19,42 @@ class App extends React.Component {
     state = {
         isTfReady: false
     };
+
+    constructor(props) {
+        super(props)
+        this.resizeWidth = 152;
+        this.resizeHeight = 200;
+        this.loadShapes()
+    }
+
+     async loadShapes() {
+         console.log("Start loading shapes")
+         // const image = require('./assets/shapes.jpeg');
+
+         const image = require('./assets/shapes.jpeg');
+         const imageAssetPath = Image.resolveAssetSource(image);
+         const response = await fetch(imageAssetPath.uri, {}, { isBinary: true}); // is binary problematic
+         const rawImageData = await response.arrayBuffer();
+         const imageTensor = decodeJpeg(rawImageData).mean(2).reshape(this.resizeHeight, this.resizeWidth);
+         imageTensor.print()
+         this.shapesTensor = imageTensor
+         console.log("End loading shapes")
+
+         // const image = require('./assets/shapes.jpg');
+         // const imageAssetPath = Image.resolveAssetSource(image);
+         // console.log("image asset path " + imageAssetPath)
+         // let response = await fetch(imageAssetPath, {isBinary: true})
+         // // const response = await fetch(imageAssetPath)
+         // // console.log('response ' + response)
+         // let response = await fetch(imageAssetPath.uri, {}, {isBinary: true});
+         // const rawImageData = await response.arrayBuffer();
+         // console.log("raw image data " + rawImageData)
+         // this.shapesTensor = decodeJpeg(rawImageData)
+         // this.shapesTensor = this.shapesTensor.mean(2).reshape(this.resizeHeight, this.resizeWidth);
+         // console.log("SHAPES A SLDKFJSLDKJFLKSJDLFJLSDF")
+         // this.shapesTensor.print()
+         // console.log("SHAPES B lskjhdfkljsdfjsdklfhsdkjfh")
+     }
 
     async componentDidMount() {
         await tf.ready();
@@ -34,16 +77,19 @@ class App extends React.Component {
     }
     handleCameraStream(images, updatePreview, gl) {
         const loop = async () => {
-            await detectGLCapabilities(gl)
+            // await detectGLCapabilities(gl)
             let nextImageTensor = await images.next().value;
             nextImageTensor = nextImageTensor.mean(2) // makes image greyscale
+            let shapesProduct = tf.mul(nextImageTensor, this.shapesTensor)
+            console.log("shapes multiplied")
+            shapesProduct.print()
             // nextImageTensor = tf.cast(nextImageTensor, "complex64")
-            console.log("FFT Start")
-            console.log(nextImageTensor.shape)
-            let fft_out = nextImageTensor.cast("complex64").fft().cast("int32")
-            // fft_out.print()
-            console.log(fft_out.shape)
-            console.log("FFT End")
+            // console.log("FFT Start")
+            // console.log(nextImageTensor.shape)
+            // let fft_out = nextImageTensor.cast("complex64").fft().cast("int32")
+            // // fft_out.print()
+            // console.log(fft_out.shape)
+            // console.log("FFT End")
             // console.log(nextImageTensor.sum(1).print())
             // console.log("KHFKHFKJHJKHLKJH")
             //
@@ -83,8 +129,8 @@ class App extends React.Component {
                     // Tensor related props
                     cameraTextureHeight={textureDims.height}
                     cameraTextureWidth={textureDims.width}
-                    resizeHeight={200}
-                    resizeWidth={152}
+                    resizeHeight={ this.resizeHeight}
+                    resizeWidth={this.resizeWidth}
                     resizeDepth={3}
                     onReady={this.handleCameraStream}
                     autorender={false}
